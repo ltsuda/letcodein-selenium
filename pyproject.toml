@@ -6,6 +6,7 @@ python_files = ["test_*.py"]
 
 [tool.black]
 line-length = 99
+target-version = ["py310"]
 
 [tool.isort]
 profile = "black"
@@ -17,7 +18,7 @@ description = ""
 authors = ["Leonardo Tsuda <leonardo.tsuda@icloud.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10"
 
 [tool.poetry.dev-dependencies]
 black = "^21.12b0"
@@ -26,6 +27,7 @@ isort = "^5.10.1"
 pre-commit = "^2.17.0"
 pytest = "^6.2.5"
 selenium = "^4.1.0"
+pytest-xdist = "^2.5.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
