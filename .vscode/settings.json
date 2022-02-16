@@ -6,7 +6,7 @@
   "editor.formatOnSave": true,
   "python.formatting.blackArgs": [
     "-t",
-    "py37",
+    "py310",
     "--line-length",
     "99"
   ],
