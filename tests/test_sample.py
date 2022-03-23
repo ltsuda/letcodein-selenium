@@ -1,23 +1,16 @@
 import pytest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
+
+from common.webelement import element
 
 
 class TestSample:
     @pytest.fixture(scope="function", autouse=True)
-    def setup(self, driver):
+    def setup(self, driver: WebDriver):
         self.driver = driver
-        self.driver.get("https://letcode.in/edit")
+        self.driver.get("https://google.com")
 
     def test_sample_1(self):
-        assert "Interact with Input fields" in self.driver.title
-
-    def test_sample_2(self):
-        assert "Interact with Input fields" in self.driver.title
-
-    def test_sample_3(self):
-        assert "Interact with Input fields" in self.driver.title
-
-    def test_sample_4(self):
-        assert "Interact with Input fields" in self.driver.title
-
-    def test_sample_5(self):
-        assert "Interact with Input fields" in self.driver.title
+        search_element = element(self.driver, (By.NAME, "q"))
+        assert search_element.is_displayed()
