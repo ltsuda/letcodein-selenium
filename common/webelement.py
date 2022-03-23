@@ -8,6 +8,10 @@ from selenium.webdriver.support.wait import WebDriverWait
 Locator = tuple[By, str]
 
 
+def element(driver: WebDriver, locator: Locator = None, timeout: int = 15):
+    return BaseWebElement(driver, locator, timeout)
+
+
 class BaseWebElement:
     """Base class for all web objects."""
 
