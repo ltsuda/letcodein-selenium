@@ -12,7 +12,7 @@ target-version = ["py310"]
 profile = "black"
 
 [tool.poetry]
-name = "letcodein-selenium"
+name = "selenium-study"
 version = "0.1.0"
 description = ""
 authors = ["Leonardo Tsuda <leonardo.tsuda@icloud.com>"]
