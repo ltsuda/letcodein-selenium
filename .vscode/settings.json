@@ -1,18 +1,10 @@
 {
-  "editor.codeActionsOnSave": {
-    "source.organizeImports": true
-  },
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "python.formatting.blackArgs": [
-    "-t",
-    "py310",
-    "--line-length",
-    "99"
-  ],
-  "python.formatting.provider": "black",
-  "python.pythonPath": "/home/ltsuda/.cache/pypoetry/virtualenvs/letcodein-selenium-NncchV79-py3.10/bin/python",
-  "python.sortImports.args": [
-    "--profile=black"
-  ]
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "python.formatting.blackArgs": ["-t", "py310", "--line-length", "99"],
+    "python.formatting.provider": "black",
+    "python.sortImports.args": ["--profile=black"]
 }
