@@ -173,3 +173,7 @@ class BaseWebElement:
 
     def text(self) -> str:
         return self._wait_for(to_find=True).element.text
+
+    def contain_text(self, expected: str) -> bool:
+        text = self.text()
+        return expected in text
