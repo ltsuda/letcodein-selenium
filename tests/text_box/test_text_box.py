@@ -45,3 +45,13 @@ class TestTextBox:
         assert self.output_email.contain_text(self.email)
         assert self.output_current_address.contain_text(self.current_address)
         assert self.output_permanent_address.contain_text(self.permanent_address)
+
+    def test_text_box_invalid_email(self):
+        self.full_name_input.send_keys(self.name)
+        self.email_input.send_keys("invalid@email")
+        self.current_address_textarea.send_keys(self.current_address)
+        self.permanent_address_textarea.send_keys(self.permanent_address)
+        self.submit_button.click()
+
+        assert self.output_email.element_is_not_present()
+        assert self.email_input.contain_class("field-error")
