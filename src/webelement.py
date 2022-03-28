@@ -1,4 +1,5 @@
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from selenium.webdriver.support.select import Select
@@ -24,7 +25,8 @@ class BaseWebElement:
                 "Locator is not defined." "Please enter 'locator=(By.<identifier>, <str>)'"
             )
         self.timeout: int = timeout
-        self.wait: WebDriverWait = WebDriverWait(driver, self.timeout)
+        self.wait: WebDriverWait = WebDriverWait(self.driver, self.timeout)
+        self.action: ActionChains = ActionChains(self.driver)
         self.element: WebElement | None = None
         self.select_object: Select | None = None
 
@@ -185,3 +187,15 @@ class BaseWebElement:
     def contain_class(self, expected: str) -> bool:
         classes = self.get_attribute("class")
         return expected in classes
+
+    # actions
+
+    def double_click(self):
+        self._wait_for(to_find=True).action.double_click(on_element=self.element)
+        self.action.perform()
+        return self
+
+    def right_click(self):
+        self._wait_for(to_find=True).action.context_click(on_element=self.element)
+        self.action.perform()
+        return self
