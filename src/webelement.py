@@ -30,13 +30,15 @@ class BaseWebElement:
         self.element: WebElement | None = None
         self.select_object: Select | None = None
 
-    def _wait_for(self, to_find: bool = True):
+    def _wait_for_element(self, to_find: bool = True):
         """Wait for element to be found or not
 
-        1 - valid selector + wait until -> assign element to element class propertie
-        2 - valid selector + wait until_not -> raises timeout exception if element still present
-        3 - invalid selector + wait until -> raises timeout exception if element still present
-        4 - invalid selector + wait until_not -> try wait resolves to True, so it does nothing
+        1 - present selector + wait until -> assign element to element class property
+        2 - present selector + wait until_not -> raises timeout exception if element still present
+        3 - not present selector + wait until -> raises timeout exception if element still not
+        present
+        4 - not present selector + wait until_not -> try wait resolves to True, assign element
+        property to None
 
         Args:
             to_find (bool, optional): whether wait to find or not the element. Defaults to True.
@@ -54,38 +56,37 @@ class BaseWebElement:
         except TimeoutException as exception:
             raise exception
         else:
-            if to_find:
-                self.element: WebElement = element
+            self.element: WebElement = element if to_find else None
             return self
 
     def clear(self):
-        self._wait_for(to_find=True).element.clear()
+        self._wait_for_element(to_find=True).element.clear()
         return self
 
     def click(self):
-        self._wait_for(to_find=True).element.click()
+        self._wait_for_element(to_find=True).element.click()
         return self
 
     def find_element(self, locator: Locator, to_find: bool = True):
         self.locator = locator
-        self.element = self._wait_for(to_find=to_find).element
+        self.element = self._wait_for_element(to_find=to_find).element
         return self
 
     def find_elements(self):
         return self.driver.find_elements(*self.locator)
 
     def screenshot(self, filename: str):
-        self._wait_for(to_find=True).element.screenshot(filename)
+        self._wait_for_element(to_find=True).element.screenshot(filename)
         return self
 
     def send_keys(self, *value):
-        self._wait_for(to_find=True).element.send_keys(*value)
+        self._wait_for_element(to_find=True).element.send_keys(*value)
         return self
 
     # Select
 
     def _get_select_object(self):
-        self.select_object = Select(self._wait_for(to_find=True).element)
+        self.select_object = Select(self._wait_for_element(to_find=True).element)
         return self
 
     def all_selected_options(self) -> list:
@@ -128,52 +129,52 @@ class BaseWebElement:
     # Information
 
     def get_attribute(self, name: str) -> str | None | bool:
-        return self._wait_for(to_find=True).element.get_attribute(name)
+        return self._wait_for_element(to_find=True).element.get_attribute(name)
 
     def get_dom_attribute(self, name: str) -> str | None | bool:
-        return self._wait_for(to_find=True).element.get_dom_attribute(name)
+        return self._wait_for_element(to_find=True).element.get_dom_attribute(name)
 
     def get_property(self, name: str) -> str | None | bool:
-        return self._wait_for(to_find=True).element.get_property(name)
+        return self._wait_for_element(to_find=True).element.get_property(name)
 
     def is_displayed(self) -> bool:
-        return self._wait_for(to_find=True).element.is_displayed()
+        return self._wait_for_element(to_find=True).element.is_displayed()
 
     def is_enabled(self) -> bool:
-        return self._wait_for(to_find=True).element.is_enabled()
+        return self._wait_for_element(to_find=True).element.is_enabled()
 
     def is_selected(self) -> bool:
-        return self._wait_for(to_find=True).element.is_selected()
+        return self._wait_for_element(to_find=True).element.is_selected()
 
     def location(self) -> dict:
-        return self._wait_for(to_find=True).element.location
+        return self._wait_for_element(to_find=True).element.location
 
     def location_once_scrolled_into_view(self) -> dict:
-        return self._wait_for(to_find=True).element.location_once_scrolled_into_view
+        return self._wait_for_element(to_find=True).element.location_once_scrolled_into_view
 
     def parent(self):
-        return self._wait_for(to_find=True).element.parent
+        return self._wait_for_element(to_find=True).element.parent
 
     def screenshot_as_base64(self) -> str:
-        return self._wait_for(to_find=True).element.screenshot_as_base64
+        return self._wait_for_element(to_find=True).element.screenshot_as_base64
 
     def screenshot_as_png(self) -> str:
-        return self._wait_for(to_find=True).element.screenshot_as_png
+        return self._wait_for_element(to_find=True).element.screenshot_as_png
 
     def size(self) -> dict:
-        return self._wait_for(to_find=True).element.size
+        return self._wait_for_element(to_find=True).element.size
 
     def tag_name(self) -> str:
-        return self._wait_for(to_find=True).element.tag_name
+        return self._wait_for_element(to_find=True).element.tag_name
 
     def rect(self) -> dict:
-        return self._wait_for(to_find=True).element.rect
+        return self._wait_for_element(to_find=True).element.rect
 
     def value_of_css_property(self, property: str) -> str:
-        return self._wait_for(to_find=True).element.value_of_css_property(property)
+        return self._wait_for_element(to_find=True).element.value_of_css_property(property)
 
     def text(self) -> str:
-        return self._wait_for(to_find=True).element.text
+        return self._wait_for_element(to_find=True).element.text
 
     # expect
 
@@ -191,11 +192,11 @@ class BaseWebElement:
     # actions
 
     def double_click(self):
-        self._wait_for(to_find=True).action.double_click(on_element=self.element)
+        self._wait_for_element(to_find=True).action.double_click(on_element=self.element)
         self.action.perform()
         return self
 
     def right_click(self):
-        self._wait_for(to_find=True).action.context_click(on_element=self.element)
+        self._wait_for_element(to_find=True).action.context_click(on_element=self.element)
         self.action.perform()
         return self
