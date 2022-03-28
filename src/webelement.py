@@ -69,9 +69,8 @@ class BaseWebElement:
         self.element = self._wait_for(to_find=to_find).element
         return self
 
-    def find_elements(self, locator: Locator):
-        # TODO: return find_elements directly or create a BaseWebElement class for list of elements
-        pass
+    def find_elements(self):
+        return self.driver.find_elements(*self.locator)
 
     def screenshot(self, filename: str):
         self._wait_for(to_find=True).element.screenshot(filename)
@@ -173,3 +172,16 @@ class BaseWebElement:
 
     def text(self) -> str:
         return self._wait_for(to_find=True).element.text
+
+    # expect
+
+    def contain_text(self, expected: str) -> bool:
+        text = self.text()
+        return expected in text
+
+    def element_is_not_present(self) -> bool:
+        return len(self.find_elements()) == 0
+
+    def contain_class(self, expected: str) -> bool:
+        classes = self.get_attribute("class")
+        return expected in classes
