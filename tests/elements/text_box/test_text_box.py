@@ -2,7 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from src.webelement import element
+from src.webelement import base_element
 
 
 class TestTextBox:
@@ -12,19 +12,21 @@ class TestTextBox:
         self.driver.get("https://demoqa.com/text-box")
 
         # elements
-        self.full_name_input = element(self.driver, (By.CSS_SELECTOR, "#userName"))
-        self.email_input = element(self.driver, (By.CSS_SELECTOR, "#userEmail"))
-        self.current_address_textarea = element(self.driver, (By.CSS_SELECTOR, "#currentAddress"))
-        self.permanent_address_textarea = element(
+        self.full_name_input = base_element(self.driver, (By.CSS_SELECTOR, "#userName"))
+        self.email_input = base_element(self.driver, (By.CSS_SELECTOR, "#userEmail"))
+        self.current_address_textarea = base_element(
+            self.driver, (By.CSS_SELECTOR, "#currentAddress")
+        )
+        self.permanent_address_textarea = base_element(
             self.driver, (By.CSS_SELECTOR, "#permanentAddress")
         )
-        self.submit_button = element(self.driver, (By.CSS_SELECTOR, "#submit"))
-        self.output_name = element(self.driver, (By.CSS_SELECTOR, "#output #name"))
-        self.output_email = element(self.driver, (By.CSS_SELECTOR, "#output #email"))
-        self.output_current_address = element(
+        self.submit_button = base_element(self.driver, (By.CSS_SELECTOR, "#submit"))
+        self.output_name = base_element(self.driver, (By.CSS_SELECTOR, "#output #name"))
+        self.output_email = base_element(self.driver, (By.CSS_SELECTOR, "#output #email"))
+        self.output_current_address = base_element(
             self.driver, (By.CSS_SELECTOR, "#output #currentAddress")
         )
-        self.output_permanent_address = element(
+        self.output_permanent_address = base_element(
             self.driver, (By.CSS_SELECTOR, "#output #permanentAddress")
         )
 

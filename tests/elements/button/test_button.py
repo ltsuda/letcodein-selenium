@@ -2,7 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from src.webelement import element
+from src.webelement import base_element
 
 
 class TestButton:
@@ -12,12 +12,18 @@ class TestButton:
         self.driver.get("https://demoqa.com/buttons")
 
         # elements
-        self.double_click_button = element(self.driver, (By.CSS_SELECTOR, "#doubleClickBtn"))
-        self.right_click_button = element(self.driver, (By.CSS_SELECTOR, "#rightClickBtn"))
-        self.click_button = element(self.driver, (By.XPATH, "//*[text()='Click Me']"))
-        self.double_click_output = element(self.driver, (By.CSS_SELECTOR, "#doubleClickMessage"))
-        self.right_click_output = element(self.driver, (By.CSS_SELECTOR, "#rightClickMessage"))
-        self.dynamic_click_output = element(self.driver, (By.CSS_SELECTOR, "#dynamicClickMessage"))
+        self.double_click_button = base_element(self.driver, (By.CSS_SELECTOR, "#doubleClickBtn"))
+        self.right_click_button = base_element(self.driver, (By.CSS_SELECTOR, "#rightClickBtn"))
+        self.click_button = base_element(self.driver, (By.XPATH, "//*[text()='Click Me']"))
+        self.double_click_output = base_element(
+            self.driver, (By.CSS_SELECTOR, "#doubleClickMessage")
+        )
+        self.right_click_output = base_element(
+            self.driver, (By.CSS_SELECTOR, "#rightClickMessage")
+        )
+        self.dynamic_click_output = base_element(
+            self.driver, (By.CSS_SELECTOR, "#dynamicClickMessage")
+        )
 
     def test_double_click(self):
         self.double_click_button.double_click()
