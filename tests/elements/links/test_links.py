@@ -6,7 +6,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-from src.webelement import element
+from src.webelement import base_element
 
 
 class TestLinks:
@@ -17,16 +17,16 @@ class TestLinks:
         self.driver.get("https://demoqa.com/links")
 
         # elements
-        self.simple_link = element(self.driver, (By.CSS_SELECTOR, "#simpleLink"))
-        self.dynamic_link = element(self.driver, (By.CSS_SELECTOR, "#dynamicLink"))
-        self.created_link = element(self.driver, (By.CSS_SELECTOR, "#created"))
-        self.no_content_link = element(self.driver, (By.CSS_SELECTOR, "#no-content"))
-        self.moved_link = element(self.driver, (By.CSS_SELECTOR, "#moved"))
-        self.bad_request_link = element(self.driver, (By.CSS_SELECTOR, "#bad-request"))
-        self.unauthorized_link = element(self.driver, (By.CSS_SELECTOR, "#unauthorized"))
-        self.forbidden_link = element(self.driver, (By.CSS_SELECTOR, "#forbidden"))
-        self.not_found_link = element(self.driver, (By.CSS_SELECTOR, "#invalid-url"))
-        self.output_response = element(self.driver, (By.CSS_SELECTOR, "#linkResponse"))
+        self.simple_link = base_element(self.driver, (By.CSS_SELECTOR, "#simpleLink"))
+        self.dynamic_link = base_element(self.driver, (By.CSS_SELECTOR, "#dynamicLink"))
+        self.created_link = base_element(self.driver, (By.CSS_SELECTOR, "#created"))
+        self.no_content_link = base_element(self.driver, (By.CSS_SELECTOR, "#no-content"))
+        self.moved_link = base_element(self.driver, (By.CSS_SELECTOR, "#moved"))
+        self.bad_request_link = base_element(self.driver, (By.CSS_SELECTOR, "#bad-request"))
+        self.unauthorized_link = base_element(self.driver, (By.CSS_SELECTOR, "#unauthorized"))
+        self.forbidden_link = base_element(self.driver, (By.CSS_SELECTOR, "#forbidden"))
+        self.not_found_link = base_element(self.driver, (By.CSS_SELECTOR, "#invalid-url"))
+        self.output_response = base_element(self.driver, (By.CSS_SELECTOR, "#linkResponse"))
 
         # variable
         self.home_url = "https://demoqa.com/"

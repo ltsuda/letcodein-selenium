@@ -2,7 +2,7 @@ import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from src.webelement import element
+from src.webelement import base_element
 
 
 class TestRadio:
@@ -12,12 +12,14 @@ class TestRadio:
         self.driver.get("https://demoqa.com/radio-button")
 
         # elements
-        self.yes_radio_button = element(self.driver, (By.CSS_SELECTOR, "label[for='yesRadio']"))
-        self.impressive_radio_button = element(
+        self.yes_radio_button = base_element(
+            self.driver, (By.CSS_SELECTOR, "label[for='yesRadio']")
+        )
+        self.impressive_radio_button = base_element(
             self.driver, (By.CSS_SELECTOR, "label[for='impressiveRadio']")
         )
-        self.no_radio_button = element(self.driver, (By.CSS_SELECTOR, "#noRadio"))
-        self.output = element(self.driver, (By.CSS_SELECTOR, ".mt-3"))
+        self.no_radio_button = base_element(self.driver, (By.CSS_SELECTOR, "#noRadio"))
+        self.output = base_element(self.driver, (By.CSS_SELECTOR, ".mt-3"))
 
     def test_select_yes(self):
         self.yes_radio_button.click()
