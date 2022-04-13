@@ -62,34 +62,34 @@ class TestLinks:
     def test_created_link(self):
         expected_response = "Link has responded with staus 201 and status text Created"
         self.created_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_no_content_link(self):
         expected_response = "Link has responded with staus 204 and status text No Content"
         self.no_content_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_moved_link(self):
         expected_response = "Link has responded with staus 301 and status text Moved Permanently"
         self.moved_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_bad_request_link(self):
         expected_response = "Link has responded with staus 400 and status text Bad Request"
         self.bad_request_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_unauthorized_link(self):
         expected_response = "Link has responded with staus 401 and status text Unauthorized"
         self.unauthorized_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_forbidden_link(self):
         expected_response = "Link has responded with staus 403 and status text Forbidden"
         self.forbidden_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
 
     def test_not_found_link(self):
         expected_response = "Link has responded with staus 404 and status text Not Found"
         self.not_found_link.click()
-        assert self.output_response.text() == expected_response
+        assert self.output_response.element_text_is(expected_response)
