@@ -1,4 +1,4 @@
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver, WebElement
@@ -46,8 +46,8 @@ class BaseWebElement:
         self.action: ActionChains = ActionChains(self.driver)
         self.select_object: Select | None = None
 
-    def _waiter(self, predicate: callable, should_wait=True):
-        wait_func: callable = self.wait.until if should_wait else self.wait.until_not
+    def _waiter(self, predicate: callable, until_not=True):
+        wait_func: callable = self.wait.until if until_not else self.wait.until_not
 
         try:
             return wait_func(lambda _: predicate())
@@ -63,7 +63,7 @@ class BaseWebElement:
 
     def wait_for_elements(self):
         def _predicate():
-            return self.driver.find_elements(*self.locator)
+            return self.find_elements()
 
         return self._waiter(_predicate)
 
@@ -187,16 +187,47 @@ class BaseWebElement:
 
     # expect
 
+    def element_text_is(self, expected: str) -> bool:
+        text = self.text()
+        return expected == text
+
     def contain_text(self, expected: str) -> bool:
         text = self.text()
         return expected in text
 
+    def element_is_present(self) -> bool:
+        try:
+            self.driver.find_element(*self.locator)
+        except NoSuchElementException:
+            return False
+        else:
+            return True
+
     def element_is_not_present(self) -> bool:
-        return len(self.find_elements()) == 0
+        return self.element_is_present() == False
+
+    def elements_are_present(self) -> bool:
+        elements = self.driver.find_elements(*self.locator)
+        return len(elements) > 1
+
+    def elements_are_not_present(self) -> bool:
+        elements = self.driver.find_elements(*self.locator)
+        return len(elements) == 0
 
     def contain_class(self, expected: str) -> bool:
         classes = self.get_attribute("class")
         return expected in classes
+
+    # wait and expect
+
+    def wait_until_element_is_present(self) -> bool:
+        return len(self.wait_for_elements()) == 1
+
+    def wait_until_element_is_not_present(self) -> bool:
+        return len(self.wait_for_elements()) == 0
+
+    def wait_until_elements_are_present(self) -> bool:
+        return len(self.wait_for_elements()) > 1
 
     # actions
 

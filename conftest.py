@@ -15,7 +15,7 @@ class Browsers:
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--browser",
+        "--select-browser",
         action="store",
         default=Browsers.CHROME,
         help="Choose which browser to run tests, defaults to 'chrome'",
