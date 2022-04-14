@@ -9,8 +9,8 @@ class Waiter:
         self.timeout: int = timeout
         self.waiter: WebDriverWait = WebDriverWait(self.driver, self.timeout)
 
-    def wait(self, predicate: callable, until_not=True):
-        wait_func: callable = self.waiter.until if until_not else self.waiter.until_not
+    def wait(self, predicate: callable, until=True):
+        wait_func = self.waiter.until if until else self.waiter.until_not
 
         try:
             return wait_func(lambda _: predicate())
