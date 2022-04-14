@@ -1,34 +1,16 @@
 import pytest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from src.webelement import base_element
+from src.consts import URL
+from src.pages.elements.text_box.text_box_page import TextboxPage
 
 
 class TestTextBox:
     @pytest.fixture(scope="function", autouse=True)
     def setup(self, driver: WebDriver):
-        self.driver = driver
-        self.driver.get("https://demoqa.com/text-box")
-
-        # elements
-        self.full_name_input = base_element(self.driver, (By.CSS_SELECTOR, "#userName"))
-        self.email_input = base_element(self.driver, (By.CSS_SELECTOR, "#userEmail"))
-        self.current_address_textarea = base_element(
-            self.driver, (By.CSS_SELECTOR, "#currentAddress")
-        )
-        self.permanent_address_textarea = base_element(
-            self.driver, (By.CSS_SELECTOR, "#permanentAddress")
-        )
-        self.submit_button = base_element(self.driver, (By.CSS_SELECTOR, "#submit"))
-        self.output_name = base_element(self.driver, (By.CSS_SELECTOR, "#output #name"))
-        self.output_email = base_element(self.driver, (By.CSS_SELECTOR, "#output #email"))
-        self.output_current_address = base_element(
-            self.driver, (By.CSS_SELECTOR, "#output #currentAddress")
-        )
-        self.output_permanent_address = base_element(
-            self.driver, (By.CSS_SELECTOR, "#output #permanentAddress")
-        )
+        self.textbox_page = TextboxPage(driver)
+        self.textbox_page.goto()
+        self.textbox_page.wait_until_url(URL.TEXTBOX)
 
         # variables
         self.name = "John Doe"
@@ -37,23 +19,23 @@ class TestTextBox:
         self.permanent_address = "1 Apple Park Way, Cupertino, CA 95014"
 
     def test_text_box(self):
-        self.full_name_input.send_keys(self.name)
-        self.email_input.send_keys(self.email)
-        self.current_address_textarea.send_keys(self.current_address)
-        self.permanent_address_textarea.send_keys(self.permanent_address)
-        self.submit_button.click()
+        self.textbox_page.full_name_input().send_keys(self.name)
+        self.textbox_page.email_input().send_keys(self.email)
+        self.textbox_page.current_address_textarea().send_keys(self.current_address)
+        self.textbox_page.permanent_address_textarea().send_keys(self.permanent_address)
+        self.textbox_page.submit_button().click()
 
-        assert self.output_name.contain_text(self.name)
-        assert self.output_email.contain_text(self.email)
-        assert self.output_current_address.contain_text(self.current_address)
-        assert self.output_permanent_address.contain_text(self.permanent_address)
+        assert self.textbox_page.output_name().contain_text(self.name)
+        assert self.textbox_page.output_email().contain_text(self.email)
+        assert self.textbox_page.output_current_address().contain_text(self.current_address)
+        assert self.textbox_page.output_permanent_address().contain_text(self.permanent_address)
 
     def test_text_box_invalid_email(self):
-        self.full_name_input.send_keys(self.name)
-        self.email_input.send_keys("invalid@email")
-        self.current_address_textarea.send_keys(self.current_address)
-        self.permanent_address_textarea.send_keys(self.permanent_address)
-        self.submit_button.click()
+        self.textbox_page.full_name_input().send_keys(self.name)
+        self.textbox_page.email_input().send_keys("invalid@email")
+        self.textbox_page.current_address_textarea().send_keys(self.current_address)
+        self.textbox_page.permanent_address_textarea().send_keys(self.permanent_address)
+        self.textbox_page.submit_button().click()
 
-        assert self.output_email.element_is_not_present()
-        assert self.email_input.contain_class("field-error")
+        assert self.textbox_page.output_email().element_is_not_present()
+        assert self.textbox_page.email_input().contain_class("field-error")

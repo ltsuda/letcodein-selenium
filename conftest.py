@@ -41,7 +41,7 @@ def driver(request):
     for more than one test.
     """
 
-    browser = request.config.getoption("--browser")
+    browser = request.config.getoption("--select-browser")
     custom_driver = select_driver(browser)
 
     custom_driver.maximize_window()

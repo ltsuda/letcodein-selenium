@@ -1,9 +1,10 @@
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.wait import WebDriverWait
+
+from src.utils import Waiter
 
 # Selenium locator (By.identifier, 'selector')
 Locator = tuple[By, str]
@@ -42,30 +43,22 @@ class BaseWebElement:
                 "Please enter 'element' of type WebElement"
             )
         self.timeout: int = timeout
-        self.wait: WebDriverWait = WebDriverWait(self.driver, self.timeout)
+        self.waiter: Waiter = Waiter(self.driver, self.timeout)
         self.action: ActionChains = ActionChains(self.driver)
         self.select_object: Select | None = None
-
-    def _waiter(self, predicate: callable, until_not=True):
-        wait_func: callable = self.wait.until if until_not else self.wait.until_not
-
-        try:
-            return wait_func(lambda _: predicate())
-        except TimeoutException as exception:
-            raise exception
 
     def wait_for_element(self):
         def _predicate():
             return self.driver.find_element(*self.locator)
 
-        self.element = self._waiter(_predicate)
+        self.element = self.waiter.wait(_predicate)
         return self
 
     def wait_for_elements(self):
         def _predicate():
             return self.find_elements()
 
-        return self._waiter(_predicate)
+        return self.waiter.wait(_predicate)
 
     def clear(self):
         self.wait_for_element().element.clear()
@@ -79,7 +72,7 @@ class BaseWebElement:
         def _predicate():
             return self.wait_for_element().element.find_element(*locator)
 
-        return base_element(self.driver, locator, element=self._waiter(_predicate))
+        return base_element(self.driver, locator, element=self.waiter.wait(_predicate))
 
     def find_elements(self):
         return self.driver.find_elements(*self.locator)
