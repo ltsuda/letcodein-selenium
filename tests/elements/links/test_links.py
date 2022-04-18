@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from src.consts import URL
 from src.pages.elements.links.links_page import LinksPage
-from src.utils import Waiter
 
 
 class TestLinks:
@@ -13,7 +12,6 @@ class TestLinks:
         self.links_page = LinksPage(driver)
         self.links_page.goto()
         self.links_page.wait_until_url(URL.LINKS)
-        self.waiter = Waiter(driver)
 
     def test_simple_link(self):
         main_window = self.links_page.driver.current_window_handle
@@ -21,9 +19,7 @@ class TestLinks:
 
         self.links_page.simple_link().click()
 
-        # TODO: why self.waiter.wait(EC.new_window_is_opened(window_handles)) doesn't work
-        # with missing predicate driver error
-        assert self.waiter.waiter.until(EC.new_window_is_opened(window_handles))
+        assert self.links_page.waiter.until(EC.new_window_is_opened(window_handles))
 
         windows = self.links_page.driver.window_handles
         windows.remove(main_window)
@@ -37,9 +33,7 @@ class TestLinks:
 
         self.links_page.dynamic_link().click()
 
-        # TODO: why self.waiter.wait(EC.new_window_is_opened(window_handles)) doesn't work
-        # with missing predicate driver error
-        assert self.waiter.waiter.until(EC.new_window_is_opened(window_handles))
+        assert self.links_page.waiter.until(EC.new_window_is_opened(window_handles))
 
         windows = self.links_page.driver.window_handles
         windows.remove(main_window)

@@ -1,17 +1,19 @@
-from selenium.common.exceptions import NoSuchElementException
+import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from selenium.webdriver.support.select import Select
-
-from src.utils import Waiter
+from selenium.webdriver.support.wait import WebDriverWait
 
 # Selenium locator (By.identifier, 'selector')
 Locator = tuple[By, str]
 
 
 def base_element(
-    driver: WebDriver, locator: Locator = None, element: WebElement = None, timeout: int = 15
+    driver: WebDriver,
+    locator: Locator = None,
+    element: WebElement | None = None,
+    timeout: int = 15,
 ):
     return BaseWebElement(driver, locator, element, timeout)
 
@@ -23,7 +25,7 @@ class BaseWebElement:
         self,
         driver: WebDriver,
         locator: Locator = None,
-        element: WebElement = None,
+        element: WebElement | None = None,
         timeout: int = 60,
     ):
         self.driver: WebDriver = driver
@@ -31,9 +33,9 @@ class BaseWebElement:
         if locator is not None and isinstance(locator, tuple) and element is None:
             self.locator: Locator = locator
         elif element is not None and locator is None:
-            self.element: WebElement = element
+            self.element: WebElement | None = element
         elif element is not None and locator is not None and isinstance(locator, tuple):
-            self.element: WebElement = element
+            self.element: WebElement | None = element
             self.locator: Locator = locator
         else:
             raise Exception(
@@ -43,34 +45,48 @@ class BaseWebElement:
                 "Please enter 'element' of type WebElement"
             )
         self.timeout: int = timeout
-        self.waiter: Waiter = Waiter(self.driver, self.timeout)
+        self.waiter: WebDriverWait = WebDriverWait(self.driver, self.timeout)
         self.action: ActionChains = ActionChains(self.driver)
         self.select_object: Select | None = None
 
-    def wait_for_element(self):
-        def _predicate():
-            return self.driver.find_element(*self.locator)
-
-        self.element = self.waiter.wait(_predicate)
+    def _wait_for_presence_of_element(self):
+        # Next line sets element if present, otherwise throws TimeoutException
+        # Method is necessary when element is visible but "disabled"
+        self.element = self.waiter.until(EC.presence_of_element_located(self.locator))
         return self
 
-    def wait_for_elements(self):
-        def _predicate():
-            return self.find_elements()
+    def _wait_for_visible_element(self):
+        # Next line sets element if present and visible, otherwise throws TimeoutException
+        self.element = self.waiter.until(EC.visibility_of_element_located(self.locator))
+        return self
 
-        return self.waiter.wait(_predicate)
+    def wait_for_all_visible_elements(self) -> list[WebElement]:
+        # Next line returns a list of elements if present and visible,
+        # otherwise throws TimeoutException
+        return self.waiter.until(EC.visibility_of_all_elements_located(self.locator))
+
+    def wait_for_element_to_disappear(self) -> bool:
+        # Next line returns True if element is present but not visible, if element is not found
+        # or if element is stale (not present anymore)
+        return self.waiter.until(EC.invisibility_of_element(self.locator))
+
+    def wait_for_all_elements_to_disappear(self) -> bool | list:
+        # Next line returns an empty list if no element is found (what we want), returns False if
+        # any element is invisible (what we want), otherwise throws TimeoutException (if any
+        # element is still visible)
+        return self.waiter.until_not(EC.visibility_of_all_elements_located(self.locator))
 
     def clear(self):
-        self.wait_for_element().element.clear()
+        self._wait_for_visible_element().element.clear()
         return self
 
     def click(self):
-        self.wait_for_element().element.click()
+        self._wait_for_visible_element().element.click()
         return self
 
     def find_child_element(self, locator: Locator):
         def _predicate():
-            return self.wait_for_element().element.find_element(*locator)
+            return self._wait_for_visible_element().element.find_element(*locator)
 
         return base_element(self.driver, locator, element=self.waiter.wait(_predicate))
 
@@ -78,17 +94,17 @@ class BaseWebElement:
         return self.driver.find_elements(*self.locator)
 
     def screenshot(self, filename: str):
-        self.wait_for_element().element.screenshot(filename)
+        self._wait_for_visible_element().element.screenshot(filename)
         return self
 
     def send_keys(self, *value):
-        self.wait_for_element().element.send_keys(*value)
+        self._wait_for_visible_element().element.send_keys(*value)
         return self
 
     # Select
 
     def _get_select_object(self):
-        self.select_object = Select(self.wait_for_element().element)
+        self.select_object = Select(self._wait_for_visible_element().element)
         return self
 
     def all_selected_options(self) -> list:
@@ -131,52 +147,52 @@ class BaseWebElement:
     # # Information
 
     def get_attribute(self, name: str) -> str | None | bool:
-        return self.wait_for_element().element.get_attribute(name)
+        return self._wait_for_visible_element().element.get_attribute(name)
 
     def get_dom_attribute(self, name: str) -> str | None | bool:
-        return self.wait_for_element().element.get_dom_attribute(name)
+        return self._wait_for_visible_element().element.get_dom_attribute(name)
 
     def get_property(self, name: str) -> str | None | bool:
-        return self.wait_for_element().element.get_property(name)
+        return self._wait_for_visible_element().element.get_property(name)
 
     def is_displayed(self) -> bool:
-        return self.wait_for_element().element.is_displayed()
+        return self._wait_for_visible_element().element.is_displayed()
 
     def is_enabled(self) -> bool:
-        return self.wait_for_element().element.is_enabled()
+        return self._wait_for_presence_of_element().element.is_enabled()
 
     def is_selected(self) -> bool:
-        return self.wait_for_element().element.is_selected()
+        return self._wait_for_visible_element().element.is_selected()
 
     def location(self) -> dict:
-        return self.wait_for_element().element.location
+        return self._wait_for_visible_element().element.location
 
     def location_once_scrolled_into_view(self) -> dict:
-        return self.wait_for_element().element.location_once_scrolled_into_view
+        return self._wait_for_visible_element().element.location_once_scrolled_into_view
 
     def parent(self):
-        return self.wait_for_element().element.parent
+        return self._wait_for_visible_element().element.parent
 
     def screenshot_as_base64(self) -> str:
-        return self.wait_for_element().element.screenshot_as_base64
+        return self._wait_for_visible_element().element.screenshot_as_base64
 
     def screenshot_as_png(self) -> str:
-        return self.wait_for_element().element.screenshot_as_png
+        return self._wait_for_visible_element().element.screenshot_as_png
 
     def size(self) -> dict:
-        return self.wait_for_element().element.size
+        return self._wait_for_visible_element().element.size
 
     def tag_name(self) -> str:
-        return self.wait_for_element().element.tag_name
+        return self._wait_for_visible_element().element.tag_name
 
     def rect(self) -> dict:
-        return self.wait_for_element().element.rect
+        return self._wait_for_visible_element().element.rect
 
     def value_of_css_property(self, property: str) -> str:
-        return self.wait_for_element().element.value_of_css_property(property)
+        return self._wait_for_visible_element().element.value_of_css_property(property)
 
     def text(self) -> str:
-        return self.wait_for_element().element.text
+        return self._wait_for_visible_element().element.text
 
     # expect
 
@@ -188,48 +204,43 @@ class BaseWebElement:
         text = self.text()
         return expected in text
 
-    def element_is_present(self) -> bool:
-        try:
-            self.driver.find_element(*self.locator)
-        except NoSuchElementException:
-            return False
-        else:
-            return True
+    def element_is_visible(self) -> bool:
+        # Bool or throw TimeoutException
+        self._wait_for_visible_element()
+        return type(self.element) is WebElement
 
-    def element_is_not_present(self) -> bool:
-        return self.element_is_present() == False
+    def element_is_not_visible(self) -> bool:
+        # True or throw TimeoutException
+        return self.wait_for_element_to_disappear()
 
-    def elements_are_present(self) -> bool:
-        elements = self.driver.find_elements(*self.locator)
-        return len(elements) > 1
+    def elements_are_visible(self) -> bool:
+        # Bool or throw TimeoutException
+        return len(self.wait_for_all_visible_elements()) > 0
 
-    def elements_are_not_present(self) -> bool:
-        elements = self.driver.find_elements(*self.locator)
-        return len(elements) == 0
+    def elements_are_not_visible(self) -> bool:
+        # Bool or throw TimeoutException
+        result = self.wait_for_all_elements_to_disappear()
+        if type(result) is list:
+            return len(result) == 0
+        if type(result) is bool:
+            result is False
+
+    def number_of_elements_are_visible(self, number_of_elements) -> bool:
+        # Bool or throw TimeoutException
+        return len(self.wait_for_all_visible_elements()) == number_of_elements
 
     def contain_class(self, expected: str) -> bool:
         classes = self.get_attribute("class")
         return expected in classes
 
-    # wait and expect
-
-    def wait_until_element_is_present(self) -> bool:
-        return len(self.wait_for_elements()) == 1
-
-    def wait_until_element_is_not_present(self) -> bool:
-        return len(self.wait_for_elements()) == 0
-
-    def wait_until_elements_are_present(self) -> bool:
-        return len(self.wait_for_elements()) > 1
-
     # actions
 
     def double_click(self):
-        self.wait_for_element().action.double_click(on_element=self.element)
+        self._wait_for_visible_element().action.double_click(on_element=self.element)
         self.action.perform()
         return self
 
     def right_click(self):
-        self.wait_for_element().action.context_click(on_element=self.element)
+        self._wait_for_visible_element().action.context_click(on_element=self.element)
         self.action.perform()
         return self

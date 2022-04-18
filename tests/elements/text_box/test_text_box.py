@@ -37,5 +37,5 @@ class TestTextBox:
         self.textbox_page.permanent_address_textarea().send_keys(self.permanent_address)
         self.textbox_page.submit_button().click()
 
-        assert self.textbox_page.output_email().element_is_not_present()
+        assert self.textbox_page.output_email().element_is_not_visible()
         assert self.textbox_page.email_input().contain_class("field-error")

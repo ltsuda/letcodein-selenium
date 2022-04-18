@@ -1,6 +1,6 @@
+import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
-
-from src.utils import Waiter
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class BasePage:
@@ -8,7 +8,7 @@ class BasePage:
 
     def __init__(self, driver: WebDriver):
         self.driver: WebDriver = driver
-        self.waiter: Waiter = Waiter(self.driver)
+        self.waiter: WebDriverWait = WebDriverWait(self.driver, timeout=60)
 
     def goto(self, url):
         self.driver.get(url)
@@ -20,7 +20,4 @@ class BasePage:
         return self.driver.current_url
 
     def wait_until_url(self, url) -> bool:
-        def _predicate():
-            return self.get_url() == url
-
-        return self.waiter.wait(_predicate)
+        return self.waiter.until(EC.url_to_be(url))
